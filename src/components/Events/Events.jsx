@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { FaTicketAlt, FaMapMarkerAlt, FaCalendarAlt, FaExternalLinkAlt, FaPlus, FaSpinner } from "react-icons/fa";
+import { FaMapMarkerAlt, FaCalendarAlt, FaExternalLinkAlt, FaPlus, FaSpinner } from "react-icons/fa";
 
 const EventsList = ({ isDarkMode }) => {
   const [events, setEvents] = useState([]);
@@ -15,7 +15,7 @@ const EventsList = ({ isDarkMode }) => {
     "The University Star",
     "Bandsintown.com",
     "Etix.com",
-    "All",
+    "All"
   ];
 
   const ticketSources = [
@@ -32,6 +32,7 @@ const EventsList = ({ isDarkMode }) => {
       .then((response) => response.json())
       .then((data) => {
         setEvents(data); 
+        console.log(data, 'dataaaaaaaaaaa')
         setFilteredEvents(data); 
         setLoading(false); 
       })
@@ -66,8 +67,10 @@ const EventsList = ({ isDarkMode }) => {
       const updatedEvents = [newEntry, ...events];
       setEvents(updatedEvents);
       filterBySource(selectedSource);
-      setNewEvent({ title: "", date: "", eventType: "" });
-      setIsModalOpen(false);
+      setNewEvent({ title: "", date: "", eventType: "" }); 
+      setIsModalOpen(false); 
+    } else {
+      alert("Please fill out all fields."); 
     }
   };
 
@@ -114,100 +117,119 @@ const EventsList = ({ isDarkMode }) => {
         </motion.button>
       </div>
 
-      {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
-          <div className={`p-6 border rounded-lg shadow-lg w-full max-w-md ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'}`}>
-            <h3 className="text-lg sm:text-xl font-semibold mb-4 text-center">Add New Event</h3>
-            <div className="flex flex-col gap-3">
-              <input
-                type="text"
-                placeholder="Event Title"
-                className={`border p-3 rounded w-full ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900'}`}
-                value={newEvent.title}
-                onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
-              />
-              <input
-                type="date"
-                className={`border p-3 rounded w-full ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900'}`}
-                value={newEvent.date}
-                onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
-              />
-              <input
-                type="text"
-                placeholder="Event Type"
-                className={`border p-3 rounded w-full ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900'}`}
-                value={newEvent.eventType}
-                onChange={(e) => setNewEvent({ ...newEvent, eventType: e.target.value })}
-              />
-              <div className="flex gap-2">
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="px-4 py-2 bg-green-500 text-white rounded shadow-md flex items-center justify-center gap-2 flex-1"
-                  onClick={addEvent}
-                >
-                  <FaPlus /> Add Event
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="px-4 py-2 bg-red-500 text-white rounded shadow-md flex items-center justify-center gap-2 flex-1"
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  Cancel
-                </motion.button>
-              </div>
-            </div>
+{isModalOpen && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
+    <div className={`p-6 border rounded-lg shadow-lg w-full max-w-md ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'}`}>
+      <h3 className="text-lg sm:text-xl font-semibold mb-4 text-center">Add New Event</h3>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault(); 
+          addEvent(); 
+        }}
+      >
+        <div className="flex flex-col gap-3">
+          <input
+            type="text"
+            placeholder="Event Title"
+            className={`border p-3 rounded w-full ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900'}`}
+            value={newEvent.title}
+            onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
+            required
+          />
+          <input
+            type="date"
+            className={`border p-3 rounded w-full ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900'}`}
+            value={newEvent.date}
+            onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
+            required 
+          />
+          <select
+            className={`border p-3 rounded w-full ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900'}`}
+            value={newEvent.eventType}
+            onChange={(e) => setNewEvent({ ...newEvent, eventType: e.target.value })}
+            required 
+          >
+            <option value="">Select Event Type</option>
+            {allowedSources.map((source, index) => (
+              <option key={index} value={source}>
+                {source}
+              </option>
+            ))}
+          </select>
+          <div className="flex gap-2">
+            <motion.button
+              type="submit"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="px-4 py-2 bg-green-500 text-white rounded shadow-md flex items-center justify-center gap-2 flex-1"
+            >
+              <FaPlus /> Add Event
+            </motion.button>
+            <motion.button
+              type="button" 
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="px-4 py-2 bg-red-500 text-white rounded shadow-md flex items-center justify-center gap-2 flex-1"
+              onClick={() => setIsModalOpen(false)}
+            >
+              Cancel
+            </motion.button>
           </div>
         </div>
-      )}
-
+      </form>
+    </div>
+  </div>
+)}
       {loading ? (
         <div className="flex items-center justify-center">
           <FaSpinner className="animate-spin text-4xl text-blue-600" />
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-6xl">
-          {filteredEvents.map((event, index) => (
-            <motion.div
-              key={index}
-              whileHover={{ scale: 1.05 }}
-              className={`p-6 border rounded-lg shadow-lg ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'}`}
-            >
-              <img
-                src={event.image}
-                alt={event.title}
-                className="w-full h-40 object-cover rounded"
-              />
-              <h3 className="text-base sm:text-lg font-semibold mt-3 flex items-center gap-2">
-               {event.title}
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 flex items-center gap-2">
-                <FaCalendarAlt /> {event.date.when}
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-300 flex items-center gap-2">
-                <FaMapMarkerAlt /> {event.address.join(", ")}
-              </p>
-              <div className="mt-3">
-                <h4 className="font-semibold">Ticket Sources:</h4>
-                <ul>
-                  {event.ticket_info.map((ticket) => (
-                    <li key={ticket.source}>
-                      <a
-                        href={ticket.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 dark:text-blue-300 flex items-center gap-1"
-                      >
-                        <FaExternalLinkAlt /> {ticket.source}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </motion.div>
-          ))}
+  {filteredEvents
+    .filter((event) => event.title !== "The Wallflowers") 
+    .map((event, index) => (
+      <motion.div
+        key={index}
+        whileHover={{ scale: 1.05 }}
+        className={`p-6 border rounded-lg shadow-lg ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'}`}
+      >
+        {event.image && ( 
+          <img
+            src={event.image}
+            alt={event.title}
+            className="w-full h-40 object-cover rounded"
+          />
+        )}
+        <h3 className="text-base sm:text-lg font-semibold mt-3 flex items-center gap-2">
+          {event.title}
+        </h3>
+        <p className="text-gray-600 dark:text-gray-400 flex items-center gap-2">
+          <FaCalendarAlt /> {event.date.when}
+        </p>
+        <p className="text-sm text-gray-500 dark:text-gray-300 flex items-center gap-2">
+          <FaMapMarkerAlt /> {event.address.join(", ")}
+        </p>
+        <div className="mt-3">
+          <h4 className="font-semibold">Ticket Sources:</h4>
+          <ul>
+            {event.ticket_info.map((ticket) => (
+              <li key={ticket.source}>
+                <a
+                  href={ticket.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 dark:text-blue-300 flex items-center gap-1"
+                >
+                  <FaExternalLinkAlt /> {ticket.source}
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
+      </motion.div>
+    ))}
+</div>
       )}
     </div>
   );
