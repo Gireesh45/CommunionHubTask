@@ -15,7 +15,6 @@ const EventsList = ({ isDarkMode }) => {
     "The University Star",
     "Bandsintown.com",
     "Etix.com",
-    "All"
   ];
 
   const ticketSources = [
